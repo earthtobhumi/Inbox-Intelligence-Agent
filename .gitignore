@@ -2,9 +2,12 @@
 checkpoints.sqlite
 sender_stats.sqlite
 drafts.sqlite
+users.sqlite
+*.sqlite-shm
+*.sqlite-wal
+celerybeat-schedule*
+data/
 __pycache__/
 *.pyc
 .pytest_cache/
 .venv/
-*.sqlite-shm
-*.sqlite-wal

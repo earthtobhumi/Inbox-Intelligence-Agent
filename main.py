@@ -68,17 +68,22 @@ class ChatState(TypedDict):
     messages: Annotated[list, add_messages]
 
 
+def _open_mailbox(host: str, user: str, password: str, inbox: str = "INBOX") -> MailBox:
+    mailbox = MailBox(host)
+    mailbox.login(user, password, initial_folder=inbox)
+    return mailbox
+
+
 def connect() -> MailBox:
-    """Open an authenticated IMAP connection. Raises on failure — callers
-    (tools) are responsible for catching and turning this into a string
-    the LLM can react to, since tools must never raise."""
+    """Open an authenticated IMAP connection using the single account
+    configured in .env — used by the CLI agent. Raises on failure —
+    callers (tools) are responsible for catching and turning this into a
+    string the LLM can react to, since tools must never raise."""
     if not all([IMAP_HOST, IMAP_USER, IMAP_PASS]):
         raise RuntimeError(
             "Missing IMAP credentials. Check IMAP_HOST, IMAP_USER, IMAP_PASS in .env"
         )
-    mailbox = MailBox(IMAP_HOST)
-    mailbox.login(IMAP_USER, IMAP_PASS, initial_folder=INBOX)
-    return mailbox
+    return _open_mailbox(IMAP_HOST, IMAP_USER, IMAP_PASS, INBOX)
 
 
 def _clean_body(text: str, html: str) -> str:
